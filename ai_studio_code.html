@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বাংলা টাইপিং মাস্টার - টাইপিং প্র্যাকটিস ও স্পিড টেস্ট</title>
+    <!-- Google Fonts: Hind Siliguri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- হেডার -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <span class="logo-icon">⌨️</span>
+                <h1>বাংলা টাইপিং মাস্টার</h1>
+            </div>
+            <nav>
+                <button class="nav-btn active" onclick="switchTab('practice')">অনুশীলন (Lessons)</button>
+                <button class="nav-btn" onclick="switchTab('test')">টাইপিং টেস্ট</button>
+                <button class="nav-btn" onclick="openProgressModal()">আমার অগ্রগতি</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- কন্ট্রোল বার -->
+        <section class="control-panel">
+            <div class="control-group">
+                <label for="lesson-select">পাঠ বা টেস্ট নির্বাচন করুন:</label>
+                <select id="lesson-select" onchange="loadSelectedLesson()">
+                    <!-- জাভাস্ক্রিপ্ট দিয়ে অপশন লোড হবে -->
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="layout-guide">কীবোর্ড গাইড:</label>
+                <select id="layout-guide" onchange="toggleKeyboardGuide()">
+                    <option value="avro">অভ্রো ফোনেটিক (Avro Phonetic)</option>
+                    <option value="bijoy">বিজয় লেআউট (Bijoy Layout)</option>
+                    <option value="none">গাইড বন্ধ রাখুন</option>
+                </select>
+            </div>
+
+            <div class="control-group" id="timer-duration-group" style="display: none;">
+                <label for="test-duration">টেস্টের সময়:</label>
+                <select id="test-duration" onchange="setCustomTestTime()">
+                    <option value="60">১ মিনিট</option>
+                    <option value="180">৩ মিনিট</option>
+                    <option value="300">৫ মিনিট</option>
+                    <option value="600">১০ মিনিট</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- লাইভ মেট্রিক্স কার্ড -->
+        <section class="stats-board">
+            <div class="stat-card">
+                <span class="stat-title">সময় বাকি</span>
+                <span class="stat-value" id="timer">০০:০০</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-title">গতি (WPM)</span>
+                <span class="stat-value" id="wpm">০</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-title">নির্ভুলতা</span>
+                <span class="stat-value" id="accuracy">১০০%</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-title">ভুল শব্দ/বর্ণ</span>
+                <span class="stat-value" id="errors">০</span>
+            </div>
+        </section>
+
+        <!-- টাইপিং এরিনা -->
+        <section class="typing-arena">
+            <div class="lesson-header">
+                <h3 id="current-lesson-title">পাঠ ১: প্রাথমিক হোম রো</h3>
+                <p id="lesson-instruction">নিচের টেক্সটটি দেখে সঠিকভাবে টাইপ করা শুরু করুন। টাইপ শুরু করলেই টাইমার চালু হবে।</p>
+            </div>
+
+            <div class="text-display" id="text-display" onclick="focusInput()">
+                <!-- টেক্সট এখানে ডায়নামিকালি আসবে -->
+            </div>
+
+            <!-- টাইপিং ইনপুট ফিল্ড -->
+            <input type="text" id="typing-input" class="typing-input" autocomplete="off" autofocus placeholder="এখানে টাইপ করুন...">
+
+            <div class="arena-controls">
+                <button class="btn btn-secondary" onclick="restartLesson()">পুনরায় শুরু 🔄</button>
+            </div>
+        </section>
+
+        <!-- ভার্চুয়াল কীবোর্ড গাইড -->
+        <section class="keyboard-guide" id="keyboard-guide-container">
+            <div class="guide-title">
+                <span id="guide-name">অভ্রো ফোনেটিক দ্রুত সহায়িকা</span>
+            </div>
+            <div id="keyboard-mapping" class="keyboard-grid">
+                <!-- কীবোর্ড সহায়িকা গ্রিড -->
+            </div>
+        </section>
+    </main>
+
+    <!-- ফলাফল মডাল (Modal) -->
+    <div class="modal" id="result-modal">
+        <div class="modal-content">
+            <h2>অভিনন্দন! 🎉</h2>
+            <p>আপনি সফলভাবে পাঠটি সম্পন্ন করেছেন।</p>
+            <div class="modal-stats">
+                <div>গতি: <span id="modal-wpm">০</span> WPM</div>
+                <div>নির্ভুলতা: <span id="modal-accuracy">০%</span></div>
+                <div>মোট সময়: <span id="modal-time">০</span> সেকেন্ড</div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal(); restartLesson();">আবার চেষ্টা করুন</button>
+                <button class="btn btn-primary" onclick="nextLesson()">পরবর্তী পাঠ ➡️</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- অগ্রগতি মডাল -->
+    <div class="modal" id="progress-modal">
+        <div class="modal-content">
+            <h2>আপনার সামগ্রিক অগ্রগতি 📊</h2>
+            <div id="progress-list" class="progress-list">
+                <!-- ডায়নামিক ডাটা -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeProgressModal()">বন্ধ করুন</button>
+                <button class="btn btn-danger" onclick="clearProgress()">অগ্রগতি রিসেট</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
